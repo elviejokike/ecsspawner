@@ -27,8 +27,10 @@ class EcsTaskSpawner(Spawner):
 
         """ Creates and boots a new server to host the worker instance."""
         self.log.info("function create_new_instance %s" % self.user.name)
-        self.ecs_client = boto3.client('ecs')
-        self.ec2_client = boto3.client('ec2')
+        self.ecs_client = boto3.client('ecs', region_name='ap-south-1')
+        self.ec2_client = boto3.client('ec2', region_name='ap-south-1')
+
+    _executor = None
 
     strategy = Unicode(
         "ECSxEC2SpawnerHandler",
@@ -349,7 +351,7 @@ class ECSxEC2SpawnerHandler(ECSSpawnerHandler):
     )
 
     port = Integer(
-        8888,
+        8000,
         help="""
         Default port to 8888
         """
@@ -357,7 +359,7 @@ class ECSxEC2SpawnerHandler(ECSSpawnerHandler):
 
     def __init__(self, spawner, ec2_instance_template=None,
                  ec2_instance_template_version='1',
-                 port=8888, **kwargs):
+                 port=8000, **kwargs):
 
         super().__init__(spawner, **kwargs)
         self.ec2_instance_template = ec2_instance_template
@@ -424,14 +426,14 @@ class ECSxEC2SpawnerHandler(ECSSpawnerHandler):
         task = self.ecs_client.start_task(taskDefinition=task_def_arn,
            cluster=self.cluster_name,
            startedBy=self._get_task_identifier(),
-           overrides={
-               'containerOverrides': [
-                   {
-                       'name': 'adp-notebook-ecs',
-                       'environment': container_env
-                   }
-               ]
-           },
+           # overrides={
+           #     'containerOverrides': [
+           #         {
+           #             'name': 'adp-notebook-ecs',
+           #             'environment': container_env
+           #         }
+           #     ]
+           # },
            containerInstances=[selected_container_instance['containerInstanceArn']]
         )['tasks'][0]
 
