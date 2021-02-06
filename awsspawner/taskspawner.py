@@ -49,8 +49,8 @@ class EcsTaskSpawner(Spawner):
 
         """ Creates and boots a new server to host the worker instance."""
         self.log.info("function create_new_instance %s" % self.user.name)
-        self.ecs_client = boto3.client("ecs", region_name="ap-south-1")
-        self.ec2_client = boto3.client("ec2", region_name="ap-south-1")
+        self.ecs_client = boto3.client("ecs", region_name="ap-south-1") # change region name
+        self.ec2_client = boto3.client("ec2", region_name="ap-south-1") # change region name 
 
     _executor = None
 
@@ -365,7 +365,7 @@ class ECSSpawnerHandler(SpawnerHandler):
                     "cpu": 30,
                     "essential": True,
                     "name": "terminado-image",
-                    "image": self.image,
+                    "image": "image uri", # give image arn
                     "portMappings": [
                         {
                             "containerPort": 8000,
